@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MiMo 语音工坊 · Voice Studio</title>
+<meta name="description" content="在线语音合成工作台：文本朗读、音色设计、音色克隆与媒体库，基于小米 MiMo 开放平台。">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/studio.css">
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ============ 左侧控制台导航 ============ -->
+  <aside class="rail">
+    <div class="rail-brand">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.5 12h1.8M8 8v8M12 4.5v15M16 7v10M19.5 10v4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></div>
+      <div><div class="brand-name">MiMo 语音工坊</div><div class="brand-sub">VOICE STUDIO</div></div>
+    </div>
+    <nav class="rail-nav" id="nav" aria-label="工作站">
+      <button class="nav-btn active" data-view="read"><i class="st-no">01</i><span>文本朗读</span></button>
+      <button class="nav-btn" data-view="design"><i class="st-no">02</i><span>音色设计</span></button>
+      <button class="nav-btn" data-view="clone"><i class="st-no">03</i><span>音色克隆</span></button>
+      <button class="nav-btn" data-view="library"><i class="st-no">04</i><span>媒体库</span></button>
+      <button class="nav-btn" data-view="settings"><i class="st-no">05</i><span>设置</span></button>
+    </nav>
+    <div class="rail-foot">
+      <div class="svc-line" id="svcPill"><span class="dot"></span>服务检测中</div>
+      <div class="rail-keys">
+        <span><kbd>Ctrl</kbd><kbd>Enter</kbd> 立即合成</span>
+        <span><kbd>Space</kbd> 播放<span class="sep">·</span><kbd>←</kbd><kbd>→</kbd> 快进快退</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ 主舞台 ============ -->
+  <div class="stage">
+
+    <header class="topbar">
+      <div class="crumb"><i class="crumb-no mono" id="crumbNo">01</i><span id="crumbName">文本朗读</span></div>
+      <div class="top-status">
+        <button class="pill" id="apiPill"><span class="dot"></span>API</button>
+        <button class="pill" id="dirPill"><span class="dot"></span>导出目录</button>
+        <button class="pill icon-only" id="themeBtn" title="切换主题 / Toggle theme" aria-label="切换主题"></button>
+      </div>
+    </header>
+
+    <main class="main">
+
+      <!-- ================= 01 朗读 ================= -->
+      <section class="view active" id="view-read">
+        <div class="station-head">
+          <div class="eyebrow mono">STATION 01 · SPEECH</div>
+          <h1>文本朗读</h1>
+          <p>9 种预置精品音色 · 流式 pcm16 实时播放 · 括号标签与导演指令精细演绎，长文可逐段排队合成。</p>
+        </div>
+        <div class="layout">
+          <div class="col-work">
+            <div class="card">
+              <div class="card-head">
+                <div class="card-title" style="margin:0"><h2>合成文本</h2><span class="card-sub">目标文本作为 assistant 消息</span></div>
+                <div class="head-tools">
+                  <div class="dropdown">
+                    <button class="btn btn-ghost btn-sm" id="btnSamples">示例脚本 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+                    <div class="menu" id="sampleMenu"></div>
+                  </div>
+                  <button class="btn btn-ghost btn-sm" id="btnClearText">清空</button>
+                </div>
+              </div>
+              <div class="tag-panel" id="tagPanelRead"></div>
+              <textarea id="ttsText" class="ta-main" spellcheck="false" placeholder="输入要朗读的文本…&#10;&#10;开头可加风格标签，如：(磁性) 夜已经深了，城市还在呼吸…&#10;文中可插音频标签，如：（叹气）唉，算了。&#10;用空行分段，即可逐段排队合成。"></textarea>
+              <div class="ta-foot">
+                <span class="meter"><b id="charCount">0</b> 字<span class="dot-sep">·</span>约 <b id="estDur">0:00</b><span class="dot-sep">·</span><b id="segCount">1</b> 段</span>
+                <span class="hint mono">Ctrl + Enter 合成</span>
+              </div>
+              <div class="instr">
+                <div class="instr-head">
+                  <label for="ttsInstr">导演指令 · 自然语言风格控制（置于 user 消息，可选）</label>
+                  <button class="btn btn-ghost btn-xs" id="btnDirector">导演模式模板</button>
+                </div>
+                <textarea id="ttsInstr" class="ta-instr" spellcheck="false" placeholder="一句话描述想要的风格：如「用轻快上扬的语调向领导报喜，语速稍快，带着压抑不住的激动」；也可使用【角色】【场景】【指导】的导演模式"></textarea>
+                <div class="chip-row" id="instrPresets"></div>
+              </div>
+            </div>
+
+            <div class="gen-dock">
+              <button class="btn-generate" id="btnGenRead"><span class="g-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M3.5 12h1.8M8 8.5v7M12 4.5v15M16 7.5v9M19.5 10.5v3"/></svg></span><span>开始合成</span></button>
+              <button class="btn btn-dark" id="btnQueueRead" title="按空行拆分文本，逐段排队合成">逐段合成 <b id="queueSegN">1</b> 段</button>
+              <span class="gen-note">流式模式下边合成边播放，完成即存入媒体库</span>
+            </div>
+            <div class="gen-panel" id="genPanelRead"></div>
+          </div>
+
+          <aside class="col-side">
+            <div class="card">
+              <div class="card-title"><h2>预置音色</h2><span class="card-sub mono">mimo-v2.5-tts</span></div>
+              <div class="voice-grid" id="voiceGrid"></div>
+            </div>
+            <div class="card">
+              <div class="card-title"><h2>合成选项</h2></div>
+              <label class="switch" style="margin-top:0"><input type="checkbox" id="streamToggle"><span class="sl"></span>
+                <span class="sw-t"><b>流式合成</b><i>pcm16 边生成边播放，延迟更低</i></span></label>
+              <div class="opt-note">唱歌模式：文本<b>最开头</b>加 <code>(唱歌)</code>（等效 sing / singing），中文歌词效果更佳。</div>
+            </div>
+            <div class="card tip-card">
+              <div class="card-title"><h2>快捷指南</h2></div>
+              <ul class="tips">
+                <li><b>风格标签</b>放文本开头，可叠加：<code>(温柔 慵懒)</code></li>
+                <li><b>音频标签</b>插任意位置：<code>（叹气）</code><code>（轻笑）</code></li>
+                <li>括号支持 <code>()</code>、<code>（）</code> 与 <code>[]</code></li>
+                <li>空行分段后可「逐段合成」，长文自动排队</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ================= 02 音色设计 ================= -->
+      <section class="view" id="view-design">
+        <div class="station-head">
+          <div class="eyebrow mono">STATION 02 · VOICE DESIGN</div>
+          <h1>音色设计</h1>
+          <p>用文字描述想要的声音 · mimo-v2.5-tts-voicedesign · 无需预置音色，也无需音频样本。</p>
+        </div>
+        <div class="layout">
+          <div class="col-work">
+            <div class="card">
+              <div class="card-title"><h2>音色描述</h2><span class="card-sub">越具体越贴近预期 · 1–4 句 · 中英文皆可</span></div>
+              <div class="chip-row" id="designTplRow"></div>
+              <textarea id="designDesc" style="min-height:132px" spellcheck="false" placeholder="描述音色的性别年龄、质感、情绪语气、语速节奏…&#10;例：一位年迈的老先生，说带北方口音的普通话，语速缓慢而沉稳，嗓音略带沙哑和沧桑感。"></textarea>
+              <div class="instr">
+                <div class="instr-head">
+                  <label for="designText">试听文本（可选，建议与音色气质贴合）</label>
+                  <label class="switch mini"><input type="checkbox" id="designOpt" checked><span class="sl"></span>
+                    <span class="sw-t" style="font-size:12px">智能润色 optimize_text_preview</span></label>
+                </div>
+                <textarea id="designText" class="ta-instr" spellcheck="false" placeholder="留空则由接口根据音色描述智能润色生成…"></textarea>
+              </div>
+            </div>
+            <div class="gen-dock">
+              <button class="btn-generate teal" id="btnGenDesign"><span class="g-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.9 4.9 4.9 1.9-4.9 1.9L12 17.1l-1.9-4.9L5.2 10.3l4.9-1.9z"/><path d="M18.5 16.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg></span><span>设计并合成</span></button>
+              <span class="gen-note">描述置于 user 消息 · 每次生成自动存为音色设计</span>
+            </div>
+            <div class="gen-panel" id="genPanelDesign"></div>
+          </div>
+          <aside class="col-side">
+            <div class="card">
+              <div class="card-title"><h2>已保存的设计</h2><span class="card-sub" id="designCount"></span></div>
+              <div id="designList" class="side-list"></div>
+            </div>
+            <div class="card tip-card">
+              <div class="card-title"><h2>写好描述的要点</h2></div>
+              <ul class="tips">
+                <li>覆盖 <b>性别年龄 / 音色质感 / 情绪语气 / 语速节奏</b></li>
+                <li>可加人设与场景：评书先生、深夜电台 DJ、1940s film noir…</li>
+                <li>避免矛盾组合（稚嫩童声 + CEO 气场）</li>
+                <li>避免「混响、回声、EQ」等后期效果词</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ================= 03 音色克隆 ================= -->
+      <section class="view" id="view-clone">
+        <div class="station-head">
+          <div class="eyebrow mono">STATION 03 · VOICE CLONE</div>
+          <h1>音色克隆</h1>
+          <p>上传或现场录制一段清晰人声，复刻任意声音 · mimo-v2.5-tts-voiceclone · 支持 mp3 / wav，Base64 后不超过 10 MB。</p>
+        </div>
+        <div class="layout">
+          <div class="col-work">
+            <div class="card">
+              <div class="card-title"><h2>获取声音样本</h2><span class="card-sub">拖拽文件，或直接用麦克风录一段</span></div>
+              <div class="source-tabs" id="sourceTabs">
+                <button class="src-tab active" data-src="file">上传文件</button>
+                <button class="src-tab" data-src="mic">麦克风录制</button>
+              </div>
+              <div id="srcFile">
+                <div class="dropzone" id="dropzone" role="button" tabindex="0">
+                  <div class="dz-ic" id="dzIc"></div>
+                  <div class="dz-t">拖拽音频到这里，或 <span class="link">点击选择文件</span></div>
+                  <div class="dz-s">建议 10–30 秒清晰人声 · MP3 / WAV · ≤ 10 MB</div>
+                </div>
+                <input type="file" id="fileInput" accept=".mp3,.wav,audio/mpeg,audio/wav" hidden>
+              </div>
+              <div id="srcMic" hidden>
+                <div class="rec-box">
+                  <button class="rec-btn" id="recBtn" aria-label="开始录音"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0013 0M12 18v3"/></svg></button>
+                  <div class="rec-side">
+                    <div class="rec-time mono" id="recTime">0:00</div>
+                    <div class="rec-level" id="recLevel"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                    <div class="rec-tip" id="recTip">点击话筒开始录制，建议 10–30 秒平稳人声；再次点击停止。</div>
+                  </div>
+                </div>
+              </div>
+              <div id="uploadPreview"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-title"><h2>用克隆音色合成</h2><span class="card-sub" id="cloneSelInfo">未选择样本</span></div>
+              <div class="tag-panel" id="tagPanelClone"></div>
+              <textarea id="cloneText" class="ta-main" style="min-height:140px" spellcheck="false" placeholder="输入要用克隆音色朗读的文本…"></textarea>
+              <div class="ta-foot"><span class="meter"><b id="cloneCharCount">0</b> 字</span><span class="hint mono">Ctrl + Enter 合成</span></div>
+              <div class="instr">
+                <div class="instr-head"><label for="cloneInstr">导演指令 · 自然语言风格控制（可选）</label></div>
+                <textarea id="cloneInstr" class="ta-instr" spellcheck="false" placeholder="例：语速平缓，语气亲切，像和老朋友聊天。"></textarea>
+              </div>
+            </div>
+
+            <div class="gen-dock">
+              <button class="btn-generate plum" id="btnGenClone"><span class="g-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0013 0M12 18v3"/></svg></span><span>克隆合成</span></button>
+              <span class="gen-note">样本以 data:…;base64 传入 voice 字段</span>
+            </div>
+            <div class="gen-panel" id="genPanelClone"></div>
+          </div>
+          <aside class="col-side">
+            <div class="card">
+              <div class="card-title"><h2>样本库</h2><span class="card-sub" id="sampleCount"></span></div>
+              <div id="sampleList" class="side-list"></div>
+            </div>
+            <div class="card tip-card">
+              <div class="card-title"><h2>样本建议</h2></div>
+              <ul class="tips">
+                <li>10–30 秒清晰人声，无背景音乐与噪声</li>
+                <li>同一人自然说话，情感平稳效果最稳</li>
+                <li>录音与上传的样本都只留在本机浏览器</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ================= 04 媒体库 ================= -->
+      <section class="view" id="view-library">
+        <div class="station-head">
+          <div class="eyebrow mono">STATION 04 · LIBRARY</div>
+          <h1>媒体库</h1>
+          <p>全部生成记录、克隆样本与音色设计 · 支持批量导出到目录、分享包导入导出。</p>
+        </div>
+        <div class="lib-stats" id="libStats"></div>
+        <div class="card">
+          <div class="lib-head">
+            <div class="lib-tabs" id="libTabs">
+              <button class="lib-tab active" data-tab="audio">生成记录</button>
+              <button class="lib-tab" data-tab="samples">克隆样本</button>
+              <button class="lib-tab" data-tab="designs">音色设计</button>
+            </div>
+            <div class="lib-btns">
+              <button class="btn btn-ghost btn-sm" id="btnImport">导入分享包</button>
+              <button class="btn btn-ghost btn-sm" id="btnExportShare">导出分享包</button>
+              <button class="btn btn-dark btn-sm" id="btnExportRaw">导出到目录</button>
+            </div>
+          </div>
+          <div class="lib-toolbar">
+            <div class="lib-tools">
+              <input id="libSearch" class="input" placeholder="搜索标题 / 文本 / 音色 / 描述…">
+              <select id="libFilter" class="input" aria-label="类型筛选">
+                <option value="all">全部类型</option><option value="tts">朗读</option>
+                <option value="design">音色设计</option><option value="clone">音色克隆</option>
+              </select>
+              <select id="libSort" class="input" aria-label="排序">
+                <option value="new">最新优先</option><option value="old">最早优先</option>
+                <option value="dur">按时长</option><option value="size">按大小</option><option value="name">按名称</option>
+              </select>
+            </div>
+            <div class="lib-batch" id="libBatch" hidden>
+              <span class="batch-n">已选 <b id="batchN">0</b> 项</span>
+              <button class="btn btn-ghost btn-xs" id="btnBatchExport">导出所选</button>
+              <button class="btn btn-ghost btn-xs" id="btnBatchDl">下载所选</button>
+              <button class="btn btn-danger btn-xs" id="btnBatchDel">删除所选</button>
+              <button class="btn btn-ghost btn-xs" id="btnBatchClear">取消选择</button>
+            </div>
+          </div>
+          <div id="libBody"></div>
+        </div>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+      </section>
+
+      <!-- ================= 05 设置 ================= -->
+      <section class="view" id="view-settings">
+        <div class="station-head">
+          <div class="eyebrow mono">STATION 05 · CONSOLE</div>
+          <h1>设置</h1>
+          <p>API 凭证 · 导出目录 · 合成与数据管理</p>
+        </div>
+        <div class="settings-grid">
+          <div class="card">
+            <div class="card-title"><h2>API 凭证</h2><span class="card-sub">Xiaomi MiMo 开放平台</span></div>
+            <div class="svc-state" id="svcState"></div>
+            <div class="form-row">
+              <select id="keyType" class="input" style="width:158px;flex:none" aria-label="接入点类型">
+                <option value="auto">自动识别</option>
+                <option value="pay">按量付费 sk-</option>
+                <option value="token">Token Plan tp-</option>
+              </select>
+              <div class="key-wrap">
+                <input id="apiKeyInput" class="input mono" type="password" spellcheck="false" placeholder="sk-…（按量付费）或 tp-…（Token Plan）">
+                <button class="icon-btn" id="btnEye" title="显示 / 隐藏" aria-label="显示或隐藏密钥"></button>
+              </div>
+            </div>
+            <label class="f-label" for="proxyInput">转发地址（可选，默认使用同源服务端函数）</label>
+            <input id="proxyInput" class="input mono" spellcheck="false" placeholder="留空即同源 /functions/v1/app；自建转发填完整 https 地址">
+            <div class="key-badge" id="keyBadge">尚未填写 Key</div>
+            <div class="form-actions">
+              <button class="btn btn-primary" id="btnSaveKey">保存凭证</button>
+              <button class="btn btn-ghost" id="btnTestKey">测试连接</button>
+              <button class="btn btn-ghost" id="btnForget">清除本机 Key</button>
+            </div>
+            <div class="opt-note">sk- → <code>api.xiaomimimo.com/v1</code>；tp- → <code>token-plan-cn.xiaomimimo.com/v1</code>。密钥只存在本机浏览器，每次合成临时交给转发服务调用官方接口，转发端不写日志与存储。静态托管（GitHub Pages）本身没有服务端，请运行仓库自带的 <code>server.mjs</code> 或填写你自己的转发地址 —— 密钥会随请求发送到该地址，只在信任它时填写。</div>
+          </div>
+          <div class="card">
+            <div class="card-title"><h2>导出目录</h2><span class="card-sub mono">File System Access</span></div>
+            <div id="dirInfo"></div>
+            <div class="form-actions">
+              <button class="btn btn-primary" id="btnPickDir">选择 / 更改目录</button>
+              <button class="btn btn-ghost" id="btnReperm">重新授权</button>
+            </div>
+            <label class="switch"><input type="checkbox" id="autoExportT"><span class="sl"></span>
+              <span class="sw-t"><b>自动导出生成音频</b><i>合成完成后自动写入目录（WAV）</i></span></label>
+            <label class="switch"><input type="checkbox" id="autoArchiveT"><span class="sl"></span>
+              <span class="sw-t"><b>存档克隆样本</b><i>保存样本时写入 voice-samples/ 子目录</i></span></label>
+          </div>
+          <div class="card">
+            <div class="card-title"><h2>合成与数据</h2></div>
+            <label class="switch" style="margin-top:0"><input type="checkbox" id="streamModeT"><span class="sl"></span>
+              <span class="sw-t"><b>流式合成</b><i>pcm16 实时播放；关闭则整段 WAV 返回</i></span></label>
+            <label class="switch"><input type="checkbox" id="keepInstrT"><span class="sl"></span>
+              <span class="sw-t"><b>合成后保留文本</b><i>关闭后每次合成自动清空编辑器</i></span></label>
+            <div class="storage-line" id="storageInfo">正在读取本地存储用量…</div>
+            <div class="form-actions">
+              <button class="btn btn-ghost" id="btnExportShare2">导出分享包</button>
+              <button class="btn btn-ghost" id="btnExportRaw2">导出全部到目录</button>
+            </div>
+            <div class="danger-zone">
+              <div><b>危险区</b><p>清空媒体库中的全部音频、克隆样本与音色设计（保留 API Key 与目录设置）</p></div>
+              <button class="btn btn-danger" id="btnClearAll">清空数据</button>
+            </div>
+          </div>
+          <div class="card about-card">
+            <div class="card-title"><h2>关于本站</h2></div>
+            <p>MiMo 语音工坊 · 站点版。音频、样本、设计与凭证全部保存在你浏览器的 IndexedDB 中，可打包成分享包迁移；选择导出目录后还能直接落盘到你本机文件夹。</p>
+            <p>合成请求由本站同源的服务端函数转发至小米 MiMo 开放平台：函数只校验模型与参数白名单、不接受浏览器指定的转发地址，也不记录密钥内容。</p>
+            <p class="mono small">models: mimo-v2.5-tts / -voicedesign / -voiceclone</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- ============ 底部播放器 ============ -->
+<div class="player" id="playerBar">
+  <div class="p-left">
+    <button class="p-btn" id="pPlay" aria-label="播放/暂停"></button>
+    <div class="p-info"><div class="p-title" id="pTitle"></div><div class="p-meta" id="pMeta"></div></div>
+  </div>
+  <canvas id="pWave" title="点击跳转进度"></canvas>
+  <div class="p-right">
+    <span class="p-time mono" id="pTime">0:00 / 0:00</span>
+    <div class="p-vol"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9.5h3L11 6v12L7 14.5H4zM15.5 9.5a3.5 3.5 0 010 5M18.5 7a7 7 0 010 10"/></svg><input id="pVol" type="range" min="0" max="100" value="100" aria-label="音量"></div>
+    <button class="p-chip" id="pLoop" title="循环播放（L）" aria-pressed="false">循环</button>
+    <button class="p-chip mono" id="pRate" title="播放速度">1×</button>
+    <button class="icon-btn" id="pDl" title="下载" aria-label="下载"></button>
+    <button class="icon-btn" id="pExport" title="导出到目录" aria-label="导出到目录"></button>
+    <button class="icon-btn" id="pClose" title="关闭播放器" aria-label="关闭播放器"></button>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+<div id="modalRoot"></div>
+
+<!-- ============ 首次配置 ============ -->
+<div class="setup-mask" id="setupOverlay" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+  <div class="setup-card">
+    <div class="setup-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.5 12h1.8M8 8v8M12 4.5v15M16 7v10M19.5 10v4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></div>
+    <h1 id="setupTitle">欢迎来到 MiMo 语音工坊</h1>
+    <p>开始之前，配置小米 MiMo 开放平台的 API Key —— 它只会保存在你的浏览器里。</p>
+    <div class="setup-steps">
+      <div><b>①</b>登录 MiMo 开放平台控制台，创建 API Key</div>
+      <div><b>②</b>粘贴到下方（sk- 按量付费 / tp- Token Plan，自动识别）</div>
+      <div><b>③</b>前往「设置」选择导出目录，生成音频即可自动落盘</div>
+      <div><b>④</b>站点若已配置服务端密钥，可直接跳过本步</div>
+    </div>
+    <div class="key-wrap big"><input id="setupKey" class="input mono" type="password" spellcheck="false" placeholder="sk-xxxxxxxx 或 tp-xxxxxxxx"></div>
+    <div class="setup-actions">
+      <button class="btn-generate" id="setupSave" style="padding:12px 28px;font-size:15px"><span>保存并开始</span></button>
+      <button class="btn btn-ghost" id="setupSkip">稍后再说</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

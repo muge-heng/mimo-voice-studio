@@ -1,0 +1,38 @@
+{
+  "name": "mimo-voice-studio",
+  "version": "2.0.0",
+  "description": "MiMo 语音工坊 · 浏览器端语音合成工作台（朗读 / 音色设计 / 音色克隆 / 媒体库），附零依赖转发服务与 Qoder Sites Edge Function",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs",
+    "upstream:fake": "node test/fake-upstream.mjs",
+    "test": "node test/selftest.mjs",
+    "test:offline": "MIMO_API_KEY= MIMO_BASE_URL=http://127.0.0.1:9099/v1 node test/selftest.mjs http://127.0.0.1:4173 false",
+    "qa": "node test/visual-qa.mjs"
+  },
+  "keywords": [
+    "tts",
+    "voice-clone",
+    "voice-design",
+    "mimo",
+    "xiaomi",
+    "web-audio",
+    "indexeddb",
+    "edge-function",
+    "github-pages"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muge-heng/mimo-voice-studio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/muge-heng/mimo-voice-studio/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
