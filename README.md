@@ -4,7 +4,10 @@
 前端是零构建、零依赖的原生 ES Module 单页应用；转发服务与站点函数共用同一份参数白名单校验逻辑。
 音频、克隆样本、音色设计与 API Key 全部留在你自己的浏览器（IndexedDB）里，仓库与托管方都不保存任何内容。
 
-在线演示 · [GitHub Pages](https://muge-heng.github.io/mimo-voice-studio/)（纯静态前端，需自备转发服务，见下文「部署形态」）
+在线演示
+
+- [GitHub Pages 版](https://muge-heng.github.io/mimo-voice-studio/) —— 纯静态前端，合成需在「设置 · 转发地址」指向你自己的转发端。
+- [Qoder Sites 完整功能版](https://mimo-voice-studio-poo2vwy8n6a.qoder.zone/) —— 前端 + 同源服务端函数，打开填自己的 MiMo Key 即可合成。
 
 ![朗读工作站](docs/screenshots/read.png)
 
