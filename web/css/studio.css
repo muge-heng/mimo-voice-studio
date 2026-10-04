@@ -525,6 +525,8 @@ body.has-player .main{padding-bottom:112px}
 .setup-mark svg{width:30px;height:30px}
 .setup-card h1{font-family:var(--serif);font-size:23px;font-weight:900}
 .setup-card>p{font-size:13px;color:var(--ink-2);margin-top:10px;line-height:1.75}
+.setup-warn{font-size:12px;line-height:1.65;color:var(--amber);background:var(--amber-l);
+  border:1px solid var(--amber);border-radius:11px;padding:10px 13px;margin:-6px 0 16px;text-align:left}
 .setup-steps{text-align:left;background:var(--card-3);border:1px solid var(--line);border-radius:14px;
   padding:14px 18px;margin:20px 0;font-size:12.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:8px;line-height:1.65}
 .setup-steps b{color:var(--brand);margin-right:6px;font-family:var(--mono);font-weight:600}

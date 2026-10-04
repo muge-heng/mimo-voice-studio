@@ -60,6 +60,14 @@ export function renderServicePill() {
 }
 
 export function openSetup() {
+  const warn = $('#setupWarn');
+  if (!state.svc) {
+    warn.hidden = false;
+    warn.textContent = '当前页面还没有可用的转发服务：只填 Key 也无法合成。静态托管（GitHub Pages）请在下面「设置 · 转发地址」指向你自己的转发端，或本地运行仓库自带的 server.mjs。';
+  } else {
+    warn.hidden = true;
+    warn.textContent = '';
+  }
   $('#setupOverlay').classList.add('show');
   if (state.apiKey) $('#setupKey').value = state.apiKey;
 }
