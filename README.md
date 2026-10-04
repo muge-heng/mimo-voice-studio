@@ -121,7 +121,3 @@ Chrome / Edge 93+ 效果最完整。目录导出依赖 File System Access API（
 ## 许可
 
 [MIT](LICENSE) © 2026 muge-heng
-
-本项目由一个单文件本地应用（Python 内嵌页面 + `http.server` 代理）重写为站点版：
-代理层换成 Edge Function / 零依赖 Node 服务，前端拆分为分层 ES Module，并补齐排队合成、
-现场录音、批量管理、双主题与移动端布局。
